@@ -271,7 +271,9 @@ local function update_detail()
       end
     end
     local origin
-    if record.needs_review then
+    if record.guessed then
+      origin = "Category guessed from name"
+    elseif record.needs_review then
       origin = "Needs review"
     elseif record.edited then
       origin = "Edited by you"

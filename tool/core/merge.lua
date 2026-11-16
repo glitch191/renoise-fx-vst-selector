@@ -24,6 +24,7 @@
 ]]
 
 local names = require("core.names")
+local guess = require("core.guess")
 
 local M = {}
 
@@ -247,13 +248,17 @@ end
       id, key, name, vendor, path, format, paths, is_favorite, is_bridged,
       category, sub, secondary, tags, description, needs_review,
       note, rating, use_count, last_used,
-      in_catalog, edited, haystack,
+      in_catalog, guessed, edited, haystack,
     }
   sub and secondary are "" when unset. Categories, sub-categories and tags
   that do not exist in the taxonomy are dropped; a plugin without a valid
   category lands in taxonomy.uncategorized.
 ]]
-function M.resolve(plugins, catalog_index, user, taxonomy)
+--
+-- keywords (optional, see data/keywords.lua): when given, a plugin that is
+-- not in the catalog gets a category guessed from its name. Such a record
+-- has guessed = true and needs_review = true until the user edits it.
+function M.resolve(plugins, catalog_index, user, taxonomy, keywords)
   local tax = M.index_taxonomy(taxonomy)
   local records = {}
 
@@ -263,12 +268,19 @@ function M.resolve(plugins, catalog_index, user, taxonomy)
     local over = stored.overrides
     local usage = user.usage[plugin.key]
 
+    -- Without a catalog entry, fall back on a guess from the name.
+    local guessed = nil
+    if not entry then
+      guessed = guess.from_name(plugin.name, keywords)
+    end
+    local source = entry or guessed
+
     local function pick(field, fallback)
       if over[field] ~= nil then
         return over[field]
       end
-      if entry and entry[field] ~= nil then
-        return entry[field]
+      if source and source[field] ~= nil then
+        return source[field]
       end
       return fallback
     end
@@ -317,12 +329,14 @@ function M.resolve(plugins, catalog_index, user, taxonomy)
       tags = tags,
       description = pick("description", ""),
       -- An entry edited by the user counts as reviewed.
-      needs_review = (not edited) and (entry ~= nil) and (entry.needs_review == true),
+      needs_review = (not edited)
+        and ((entry ~= nil and entry.needs_review == true) or guessed ~= nil),
       note = stored.note or "",
       rating = stored.rating or 0,
       use_count = usage and usage.count or 0,
       last_used = usage and usage.last or "",
       in_catalog = entry ~= nil,
+      guessed = guessed ~= nil and over.category == nil,
       edited = edited,
     }
     record.haystack = build_haystack(record)

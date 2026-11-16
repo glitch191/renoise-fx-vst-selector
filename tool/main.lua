@@ -17,6 +17,7 @@ local storage = require("storage")
 local devices = require("devices")
 local taxonomy = require("data.taxonomy")
 local catalog = require("data.catalog")
+local keywords = require("data.keywords")
 
 local TOOL_NAME = "FX VST Selector"
 local TOOL_ID = "com.glitch191.RenoiseFxVstSelecta"
@@ -140,7 +141,7 @@ end
 -- Recompute the records from the last scanned device list and user data.
 local function update_records()
   local plugins = grouping.build(last_infos, app.user.settings.preferred_format)
-  app.records = merge.resolve(plugins, catalog_index, app.user, taxonomy)
+  app.records = merge.resolve(plugins, catalog_index, app.user, taxonomy, keywords)
 end
 
 local function refresh()

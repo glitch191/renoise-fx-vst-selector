@@ -27,7 +27,11 @@ each one does.
   vendors, descriptions, notes and tags), and filters by category, need,
   vendor, rating, Renoise favorites and "Needs review".
 - **Catalog** of short, factual descriptions for about 580 common effect
-  plugins. Plugins it does not know land in "Uncategorized".
+  plugins.
+- **Category guessed from the name** for plugins the catalog does not know:
+  "Dusty Tape Echo" goes to Delay and Echo, "Opto Leveler" to Compressor.
+  Guesses are marked "Needs review"; plugins with an opaque name stay in
+  "Uncategorized".
 - **Editor**: change the category, needs, vendor and description of any
   plugin, add your own note and a rating from 1 to 5 stars. Your edits always
   win over the catalog, and "Reset to catalog" brings the original back.
@@ -144,6 +148,11 @@ data, after a confirmation.
   plugin, with its names, vendor, category, optional second category, needs
   and description.
 
+- `tool/data/keywords.lua`: the rules that guess a category from a plugin
+  name when the plugin is not in the catalog. Rules are tried in order and
+  the first match wins, so specific rules ("tape delay") come before general
+  ones ("tape"). Each guessed plugin gets the default needs of its category.
+
 Catalog names are matched after normalization: letter case, channel layout
 ("Stereo", "(Mono)"), format markers and a trailing version (one or two digits, "v2" or "2.5") are ignored, so
 "Blue Cat's Chorus 4 (Stereo)" matches the entry "Blue Cat's Chorus". Run the
@@ -175,11 +184,14 @@ tool/                    The tool itself; its content is the .xrnx file
     merge.lua            Combines plugins, catalog and user data
     search.lua           Search and filters
     menu_layout.lua      Context menu entries
+    guess.lua            Category guess from a name
+    textfit.lua          Shortens texts to the width of their column
     json.lua             JSON encoder and decoder
   data/
     taxonomy.lua         Categories and needs
     catalog.lua          Plugin descriptions (first entries)
     catalog_vendors.lua  More plugin descriptions, grouped by vendor
+    keywords.lua         Rules that guess a category from a name
 tests/
   run.lua                Unit tests of the pure logic and of the catalog
   smoke.lua              Runs main.lua and browser.lua against a fake Renoise API

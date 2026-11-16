@@ -458,5 +458,114 @@ do
   equal(tiny, "...", "a very narrow column shows only the dots")
 end
 
+--------------------------------------------------------------------------------
+-- guessing a category from the name
+
+do
+  local guess = require("core.guess")
+  local keywords = require("data.keywords")
+  local tax = merge.index_taxonomy(shipped_taxonomy)
+
+  for _, rule in ipairs(keywords.rules) do
+    check(tax.categories[rule.category] ~= nil, "keyword rule uses the known category " .. rule.category)
+    for _, pattern in ipairs(rule.patterns) do
+      check(pcall(string.find, "", pattern), "valid keyword pattern " .. pattern)
+    end
+  end
+  for category, tags in pairs(keywords.tags) do
+    check(tax.categories[category] ~= nil, "keyword tags use the known category " .. category)
+    for _, tag in ipairs(tags) do
+      check(tax.tags[tag], "keyword tags use the known tag " .. tag)
+    end
+  end
+
+  -- Made-up names, and real names written differently from the catalog.
+  local cases = {
+    { "Acme Tape Delay (Stereo)", "Delay and Echo" },
+    { "Space Echo Deluxe", "Delay and Echo" },
+    { "Multi Tap Thing", "Delay and Echo" },
+    { "Tapestry Pad", nil },
+    { "Vintage Tape Machine", "Lo-fi, Tape and Vintage" },
+    { "Bitcrusher X", "Lo-fi, Tape and Vintage" },
+    { "Great Hall Reverb 2", "Reverb and Space" },
+    { "ShimmerVerb Pro", "Reverb and Space" },
+    { "Small Room", "Reverb and Space" },
+    { "Mushroom Fuzz", "Saturation and Distortion" },
+    { "Tube Compressor", "Compressor" },
+    { "FET Comp 76", "Compressor" },
+    { "Opto Leveler", "Compressor" },
+    { "Bus Limiter", "Limiter" },
+    { "Loudness Maximizer", "Limiter" },
+    { "Loudness Meter", "Metering and Analysis" },
+    { "True Peak Maximiser", "Limiter" },
+    { "Channel EQ", "EQ" },
+    { "SlickEQ Mono", "EQ" },
+    { "Freq Shifter", "Modulation" },
+    { "FreqAnalyzer", "Metering and Analysis" },
+    { "Vocal De-Esser", "De-esser" },
+    { "Noise Gate", "Gate and Expander" },
+    { "Gatekeeper", nil },
+    { "Extreme Thing", nil },
+    { "Tremolo Panner", "Tremolo and Vibrato" },
+    { "Auto Pan", "Stereo and Imaging" },
+    { "Stereo Widener", "Stereo and Imaging" },
+    { "Stereo Delay", "Delay and Echo" },
+    { "Analog Chorus", "Chorus" },
+    { "Jet Flanger", "Flanger" },
+    { "Small Phaser", "Phaser" },
+    { "Auto Filter", "Filter" },
+    { "Granular Cloud", "Pitch, Granular and Glitch" },
+    { "Auto-Tune Lite", "Pitch, Granular and Glitch" },
+    { "Transient Designer", "Transient Shaper" },
+    { "Mastering Suite", "Mastering" },
+    { "Console Channel", "Channel Strip and Console" },
+    { "Voice De-noise", "Utility" },
+    { "Simple Gain", "Utility" },
+    { "Spectrum Analyzer", "Metering and Analysis" },
+    { "Blackhole", nil },
+    { "Portal", nil },
+  }
+  for _, case in ipairs(cases) do
+    local result = guess.from_name(case[1], keywords)
+    equal(result and result.category or nil, case[2], "guess for " .. case[1])
+  end
+  equal(guess.from_name("Anything", nil), nil, "no keywords, no guess")
+
+  -- In records: a guessed category is marked and needs review.
+  local unknown = grouping.build({
+    info("Audio/Effects/VST3/G1", "Nobody: Dusty Tape Echo"),
+    info("Audio/Effects/VST3/G2", "Nobody: Mystery Box"),
+  })
+  local guessed_user = merge.new_user_data()
+  local guessed = merge.resolve(unknown, {}, guessed_user, shipped_taxonomy, keywords)
+  local echo, box = find(guessed, "Dusty Tape Echo"), find(guessed, "Mystery Box")
+  equal(echo.category, "Delay and Echo", "guessed category in the record")
+  check(echo.guessed and echo.needs_review and not echo.in_catalog, "guessed record flags")
+  equal(echo.tags[1], "space", "guessed record gets default tags")
+  equal(box.category, shipped_taxonomy.uncategorized, "no keyword, uncategorized")
+  check(not box.guessed, "no keyword, not guessed")
+  merge.set_field(guessed_user, echo.id, "category", "Lo-fi, Tape and Vintage")
+  local edited = find(merge.resolve(unknown, {}, guessed_user, shipped_taxonomy, keywords), "Dusty Tape Echo")
+  equal(edited.category, "Lo-fi, Tape and Vintage", "a user category wins over a guess")
+  check(not edited.guessed and not edited.needs_review, "an edited guess is no longer a guess")
+
+  -- How well the rules do on the catalog itself (information only).
+  local hits, tried, total = 0, 0, 0
+  for _, entry in ipairs(catalog) do
+    for _, name in ipairs(entry.names) do
+      total = total + 1
+      local result = guess.from_name(name, keywords)
+      if result then
+        tried = tried + 1
+        if result.category == entry.category or result.category == entry.secondary then
+          hits = hits + 1
+        end
+      end
+    end
+  end
+  print(("Keyword guesses on catalog names: %d of %d names guessed, %d correct (%.0f %%)")
+    :format(tried, total, hits, 100 * hits / math.max(tried, 1)))
+end
+
 print(("%d passed, %d failed"):format(passed, failed))
 os.exit(failed == 0 and 0 or 1)
