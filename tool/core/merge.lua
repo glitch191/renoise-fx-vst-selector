@@ -12,7 +12,7 @@
 
     {
       version = 1,
-      settings = { preferred_format = "VST3" | "VST", show_vendor = false },
+      settings = { preferred_format = "VST3" | "VST", <option> = false, ... },
       plugins = {
         [plugin id] = {
           overrides = { vendor, category, sub, secondary, tags, description },
@@ -27,6 +27,12 @@ local names = require("core.names")
 local guess = require("core.guess")
 
 local M = {}
+
+-- On/off settings, all off by default (see menu_layout.OPTIONS).
+M.BOOLEAN_SETTINGS = {
+  "show_vendor", "show_hints", "favorites_only", "hide_uncategorized",
+  "open_editor", "insert_at_end",
+}
 
 M.DATA_VERSION = 1
 M.MAX_DESCRIPTION = 120
@@ -83,7 +89,11 @@ end
 function M.new_user_data()
   return {
     version = M.DATA_VERSION,
-    settings = { preferred_format = "VST3", show_vendor = false },
+    settings = {
+      preferred_format = "VST3", show_vendor = false, show_hints = false,
+      favorites_only = false, hide_uncategorized = false,
+      open_editor = false, insert_at_end = false,
+    },
     plugins = {},
     usage = {},
   }
@@ -118,8 +128,12 @@ function M.sanitize_user(data)
   if type(data.settings) == "table" and data.settings.preferred_format == "VST" then
     clean.settings.preferred_format = "VST"
   end
-  if type(data.settings) == "table" and data.settings.show_vendor == true then
-    clean.settings.show_vendor = true
+  if type(data.settings) == "table" then
+    for _, key in ipairs(M.BOOLEAN_SETTINGS) do
+      if data.settings[key] == true then
+        clean.settings[key] = true
+      end
+    end
   end
 
   if type(data.plugins) == "table" then

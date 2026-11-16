@@ -34,9 +34,14 @@ end
   device is selected. Never before the mixer device at position 1. The new
   device becomes the selected device.
 
+  options (optional):
+    at_end       always insert at the end of the chain
+    open_editor  open the plugin's editor window after inserting
+
   Returns true, or false and a message. Never raises.
 ]]
-function M.insert(record)
+function M.insert(record, options)
+  options = options or {}
   local ok, result, message = pcall(function()
     local song = renoise.song()
     local track = song.selected_track
@@ -62,7 +67,7 @@ function M.insert(record)
     local device_count = #track.devices
     local selected = song.selected_track_device_index or 0
     local index
-    if selected >= 1 and selected <= device_count then
+    if not options.at_end and selected >= 1 and selected <= device_count then
       index = selected + 1
     else
       index = device_count + 1
@@ -72,11 +77,17 @@ function M.insert(record)
     end
 
     song:describe_undo("Insert " .. record.name)
-    track:insert_device_at(path, index)
+    local device = track:insert_device_at(path, index)
     -- Selecting can fail when the DSP chain is not the visible one.
     pcall(function()
       song.selected_track_device_index = index
     end)
+    if options.open_editor and device then
+      -- Renoise shows a generic editor for plugins without their own GUI.
+      pcall(function()
+        device.external_editor_visible = true
+      end)
+    end
     return true
   end)
 

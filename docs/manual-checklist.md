@@ -14,9 +14,12 @@ scripting terminal (start Renoise with the `--scripting-dev` argument, then
    or at the end of the chain when no device is selected, and is selected.
 4. Undo: Ctrl + Z removes the inserted device.
 5. In the browser, the detail panel shows how many times a plugin was used.
-6. "Show Vendor Names" in the menu (or the check box at the bottom of the
-   browser) switches the menu labels to "Vendor - Plugin"; a check mark shows
-   when it is on.
+6. Options submenu: each option shows a check mark when on and is kept after
+   a restart. Show Vendor Names gives "Vendor - Plugin"; Show Short
+   Descriptions adds a hint in parentheses (check that long labels stay
+   readable); Favorites Only lists only favorites; Hide Uncategorized removes
+   that submenu; Open Editor After Insert opens the plugin window; Insert at
+   End of Chain ignores the selected device.
 7. Browser: "Open Browser..." opens the window. Type "tape": the list filters
    while typing. Choose the need "warmth". Up and Down change the selection,
    Enter inserts, Esc clears the search and then closes the window.

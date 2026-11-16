@@ -101,10 +101,11 @@ local function build_menus()
         add_menu_entry(entry.name, function() app.open_browser() end)
       elseif entry.action == "rescan" then
         add_menu_entry(entry.name, function() app.rescan() end)
-      elseif entry.action == "toggle_vendor" then
+      elseif entry.action == "toggle" then
+        local setting = entry.setting
         add_menu_entry(entry.name,
-          function() app.set_show_vendor(not app.user.settings.show_vendor) end,
-          function() return app.user.settings.show_vendor == true end)
+          function() app.set_setting(setting, not app.user.settings[setting]) end,
+          function() return app.user.settings[setting] == true end)
       end
     end
   end
@@ -169,7 +170,11 @@ end
 -- Actions
 
 function app.insert(record)
-  local ok, message = devices.insert(record)
+  local settings = app.user.settings
+  local ok, message = devices.insert(record, {
+    at_end = settings.insert_at_end == true,
+    open_editor = settings.open_editor == true,
+  })
   if not ok then
     status(message)
     return false
@@ -199,11 +204,16 @@ function app.set_preferred_format(format)
   refresh()
 end
 
--- Show plugins as "Vendor - Name" in the context menu.
-function app.set_show_vendor(enabled)
-  app.user.settings.show_vendor = (enabled == true)
+-- Turn one of the on/off options of the Options submenu on or off.
+function app.set_setting(setting, enabled)
+  app.user.settings[setting] = (enabled == true)
   save_user()
   refresh()
+end
+
+-- Show plugins as "Vendor - Name" in the context menu.
+function app.set_show_vendor(enabled)
+  app.set_setting("show_vendor", enabled)
 end
 
 function app.export_data()

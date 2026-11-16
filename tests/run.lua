@@ -260,7 +260,8 @@ do
   check(not by_name[(root .. ":Most Used:Wobbler"):lower()], "no most used entry")
   check(by_name[(root .. ":Uncategorized:Mystery Box"):lower()], "uncategorized entry")
   check(by_name[("--- " .. root .. ":Open Browser..."):lower()], "open browser entry")
-  equal(entries[#entries].action, "toggle_vendor", "the vendor toggle is last")
+  equal(entries[#entries].action, "toggle", "the options are last")
+  equal(entries[#entries].name, root .. ":Options:Insert at End of Chain", "last option")
   local deepest = 0
   for _, entry in ipairs(entries) do
     local _, colons = entry.name:gsub(":", "")
@@ -431,11 +432,59 @@ do
   end
   check(names_of[root .. ":Modulation:Chorus:Acme Audio - Wobbler"], "vendor shown before the plugin name")
   check(names_of[root .. ":By Vendor:Acme Audio:Wobbler"], "no vendor prefix inside By Vendor")
-  check(names_of[root .. ":Show Vendor Names"], "toggle entry")
+  check(names_of[root .. ":Options:Show Vendor Names"], "toggle entry")
+  equal(names_of[root .. ":Options:Show Vendor Names"].setting, "show_vendor", "toggle setting")
   equal(menu_layout.label({ name = "X", vendor = "Unknown", rating = 0 }, true), "X", "unknown vendor is not shown")
   check(merge.sanitize_user({ version = 1, settings = { show_vendor = true } }).settings.show_vendor,
     "show_vendor setting is kept")
   check(not merge.new_user_data().settings.show_vendor, "vendor names are off by default")
+
+  -- Every option is off by default and kept when on.
+  local all_on = { version = 1, settings = {} }
+  for _, option in ipairs(menu_layout.OPTIONS) do
+    check(merge.new_user_data().settings[option.setting] == false, option.setting .. " is off by default")
+    all_on.settings[option.setting] = true
+  end
+  local kept = merge.sanitize_user(all_on).settings
+  for _, option in ipairs(menu_layout.OPTIONS) do
+    check(kept[option.setting] == true, option.setting .. " is kept")
+  end
+  check(merge.sanitize_user({ version = 1, settings = { show_hints = "yes" } }).settings.show_hints == false,
+    "a non boolean option is dropped")
+
+  -- Short descriptions.
+  equal(menu_layout.hint("Huge, otherworldly reverb. Endless ambient tails."), "Huge, otherworldly reverb",
+    "hint keeps the first sentence")
+  equal(menu_layout.hint("Simple gain control."), "Simple gain control", "hint drops the final period")
+  local long = menu_layout.hint("Transparent wideband compressor for buses and mastering work.")
+  check(#long <= menu_layout.HINT_WIDTH, "hint is short")
+  equal(long:sub(-3), "...", "a cut hint ends with three dots")
+  check(not long:find(" %.%.%.$"), "a cut hint ends on a word")
+  equal(menu_layout.hint(""), "", "no description, no hint")
+  equal(menu_layout.label({ name = "Thing", vendor = "Acme", rating = 2, description = "Makes noise. Loud." },
+    { show_hints = true }), "Thing  **  (Makes noise)", "label with rating and hint")
+  equal(menu_layout.label({ name = "Thing", vendor = "Acme", rating = 0, description = "Ratio: 4 to 1." },
+    { show_hints = true }), "Thing  (Ratio)", "a colon in a hint is safe")
+
+  local function build(options)
+    local by = {}
+    for _, entry in ipairs(menu_layout.build(records, taxonomy, root, options)) do
+      by[entry.name] = entry
+    end
+    return by
+  end
+  local hinted = build({ show_hints = true })
+  check(hinted[root .. ":Modulation:Chorus:Wobbler  (Makes things wobble)"], "hint in a category entry")
+  check(hinted[root .. ":By Vendor:Acme Audio:Wobbler  (Makes things wobble)"], "hint in a vendor entry")
+
+  local favorites = build({ favorites_only = true })
+  check(favorites[root .. ":Modulation:Chorus:Wobbler"], "favorites only keeps a favorite")
+  check(not favorites[root .. ":Uncategorized:Mystery Box"], "favorites only drops the others")
+  check(not favorites[root .. ":By Vendor:Nobody:Mystery Box"], "favorites only applies to By Vendor")
+
+  local hidden = build({ hide_uncategorized = true })
+  check(not hidden[root .. ":Uncategorized:Mystery Box"], "hide uncategorized")
+  check(hidden[root .. ":By Vendor:Nobody:Mystery Box"], "an uncategorized plugin stays in By Vendor")
 end
 
 --------------------------------------------------------------------------------

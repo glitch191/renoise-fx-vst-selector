@@ -21,8 +21,9 @@ each one does.
   menus: one submenu per category (Compressor, EQ, Reverb and Space, Tape...),
   plus By Vendor. It sits next to the native "Add Favorites" menu, which the
   Renoise API does not allow to replace.
-- **Show Vendor Names**: an option to display plugins as "Vendor - Plugin" in
-  the menu.
+- **Menu options**: vendor names, short descriptions, favorites only, hidden
+  "Uncategorized", editor opened after insertion, insertion at the end of the
+  chain.
 - **Browser window** with a search that filters while you type (names,
   vendors, descriptions, notes and tags), and filters by category, need,
   vendor, rating, Renoise favorites and "Needs review".
@@ -81,8 +82,17 @@ Right-click an empty area of a track's DSP chain (or a device in it) and open
 - **Rescan Plugins** reads the plugin list again. Renoise does not tell tools
   when it rescans its plugins, so use this after a plugin rescan in Renoise's
   preferences. The list is also refreshed when a song is loaded;
-- **Show Vendor Names** switches the labels to "Vendor - Plugin". A check mark
-  shows when it is on.
+- **Options** holds on/off settings, shown with a check mark when on and
+  kept between sessions (all off by default):
+
+| Option | Effect |
+| ------ | ------ |
+| Show Vendor Names | Labels read "Vendor - Plugin" (not inside By Vendor). |
+| Show Short Descriptions | Adds the start of the description, for example `Blackhole  (Huge, otherworldly reverb)`. |
+| Favorites Only | The menu lists only your Renoise favorites. The browser still shows everything. |
+| Hide Uncategorized | Removes the Uncategorized submenu. Those plugins stay in By Vendor. |
+| Open Editor After Insert | Opens the plugin's window right after inserting it. |
+| Insert at End of Chain | Always inserts at the end of the chain, whatever device is selected. |
 
 A plugin rated in the browser shows its stars in the menu, for example
 `Blackhole  ****`.

@@ -76,9 +76,12 @@ local track = { devices = { "mixer" }, available_device_infos = infos, available
 for _, item in ipairs(infos) do
   track.available_devices[#track.available_devices + 1] = item.path
 end
+local last_device = nil
 function track:insert_device_at(path, index)
   assert(index >= 2 and index <= #self.devices + 1, "invalid device index " .. tostring(index))
   table.insert(self.devices, index, path)
+  last_device = { path = path, external_editor_visible = false }
+  return last_device
 end
 
 local song = { selected_track = track, selected_track_device_index = 0 }
@@ -229,14 +232,53 @@ tool.app_new_document_observable.fire()
 tool.app_idle_observable.fire()
 check(count_entries("") == before, "rebuild leaves no duplicate or orphan entry")
 
--- Vendor names toggle.
-menu_entries[root .. ":Show Vendor Names"]()
-tool.app_idle_observable.fire()
+-- Options.
+local function toggle(label)
+  local name = root .. ":Options:" .. label
+  -- An option preceded by a separator has "--- " in front of its name.
+  local invoke = menu_entries[name] or menu_entries["--- " .. name]
+  invoke()
+  tool.app_idle_observable.fire()
+end
+toggle("Show Vendor Names")
 check(menu_entries[root .. ":Reverb and Space:Eventide - Blackhole"], "vendor names shown")
 check(not menu_entries[root .. ":Reverb and Space:Blackhole"], "plain names removed")
-menu_entries[root .. ":Show Vendor Names"]()
-tool.app_idle_observable.fire()
+toggle("Show Vendor Names")
 check(menu_entries[root .. ":Reverb and Space:Blackhole"], "vendor names hidden again")
+
+toggle("Show Short Descriptions")
+local hinted = 0
+for name in pairs(menu_entries) do
+  if name:find("^" .. root:gsub("%p", "%%%0") .. ":Reverb and Space:Blackhole  %(") then
+    hinted = hinted + 1
+  end
+end
+check(hinted == 1, "short description shown")
+toggle("Show Short Descriptions")
+
+toggle("Favorites Only")
+check(menu_entries[root .. ":Reverb and Space:Blackhole"], "a favorite stays")
+check(not menu_entries[root .. ":Delay and Echo:Tape Delay"], "a non favorite is hidden")
+toggle("Favorites Only")
+check(menu_entries[root .. ":Delay and Echo:Tape Delay"], "non favorites are back")
+
+toggle("Hide Uncategorized")
+check(not menu_entries[root .. ":Uncategorized:Mystery Box"], "uncategorized hidden")
+toggle("Hide Uncategorized")
+check(menu_entries[root .. ":Uncategorized:Mystery Box"], "uncategorized shown again")
+
+toggle("Insert at End of Chain")
+toggle("Open Editor After Insert")
+song.selected_track_device_index = 2
+menu_entries[root .. ":Delay and Echo:Tape Delay"]()
+check(track.devices[#track.devices] == "Audio/Effects/VST3/A2", "inserted at the end of the chain")
+check(last_device.external_editor_visible == true, "editor opened after insertion")
+toggle("Insert at End of Chain")
+toggle("Open Editor After Insert")
+song.selected_track_device_index = 2
+menu_entries[root .. ":Delay and Echo:Tape Delay"]()
+check(track.devices[3] == "Audio/Effects/VST3/A2", "inserted after the selection again")
+check(last_device.external_editor_visible == false, "editor not opened when the option is off")
 
 -- Unavailable plugin: a clear status, no error.
 local saved = track.available_devices
