@@ -212,8 +212,8 @@ check(menu_entries[root .. ":Reverb and Space:Blackhole"], "category menu entry"
 check(menu_entries[root .. ":Compressor:TDR Kotelnikov"], "compressor menu entry")
 check(menu_entries[root .. ":By Vendor:UVI:Tape Delay"], "by vendor menu entry")
 check(menu_entries[root .. ":Uncategorized:Mystery Box"], "uncategorized menu entry")
-check(menu_entries["--- " .. root .. ":Open Browser..."], "open browser menu entry")
-check(menu_entries["DSP Device:Load VST...:Rescan Plugins"], "DSP Device menu")
+check(menu_entries[root .. ":VST SELECTOR:Open Browser..."], "open browser menu entry")
+check(menu_entries["DSP Device:Load VST...:VST SELECTOR:Rescan Plugins"], "DSP Device menu")
 check(count_entries(":By Need:") + count_entries(":Favorites:") == 0, "no need or favorites submenu")
 
 -- Insert from the menu: end of chain when nothing is selected.
@@ -234,7 +234,7 @@ check(count_entries("") == before, "rebuild leaves no duplicate or orphan entry"
 
 -- Options.
 local function toggle(label)
-  local name = root .. ":Options:" .. label
+  local name = root .. ":VST SELECTOR:" .. label
   -- An option preceded by a separator has "--- " in front of its name.
   local invoke = menu_entries[name] or menu_entries["--- " .. name]
   invoke()

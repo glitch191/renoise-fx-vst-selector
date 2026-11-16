@@ -78,12 +78,14 @@ Right-click an empty area of a track's DSP chain (or a device in it) and open
 
 - a category, then a plugin, inserts it;
 - **By Vendor** lists the plugins of each vendor;
-- **Open Browser...** opens the browser window;
-- **Rescan Plugins** reads the plugin list again. Renoise does not tell tools
-  when it rescans its plugins, so use this after a plugin rescan in Renoise's
-  preferences. The list is also refreshed when a song is loaded;
-- **Options** holds on/off settings, shown with a check mark when on and
-  kept between sessions (all off by default):
+- **VST SELECTOR**, the last submenu, written in capitals so that it stands
+  out, holds the tool's own entries:
+  - **Open Browser...** opens the browser window;
+  - **Rescan Plugins** reads the plugin list again. Renoise does not tell
+    tools when it rescans its plugins, so use this after a plugin rescan in
+    Renoise's preferences. The list is also refreshed when a song is loaded;
+  - on/off options, shown with a check mark when on and kept between
+    sessions (all off by default):
 
 | Option | Effect |
 | ------ | ------ |

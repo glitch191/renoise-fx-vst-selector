@@ -259,9 +259,17 @@ do
   check(not by_name[(root .. ":Recent:Mystery Box"):lower()], "no recent entry")
   check(not by_name[(root .. ":Most Used:Wobbler"):lower()], "no most used entry")
   check(by_name[(root .. ":Uncategorized:Mystery Box"):lower()], "uncategorized entry")
-  check(by_name[("--- " .. root .. ":Open Browser..."):lower()], "open browser entry")
+  check(by_name[(root .. ":VST SELECTOR:Open Browser..."):lower()], "open browser entry")
+  check(not by_name[("--- " .. root .. ":Open Browser..."):lower()], "no open browser entry at the root")
   equal(entries[#entries].action, "toggle", "the options are last")
-  equal(entries[#entries].name, root .. ":Options:Insert at End of Chain", "last option")
+  -- Renoise sorts submenus alphabetically: the tool menu must sort after
+  -- every category, By Vendor and Uncategorized.
+  for _, category in ipairs(shipped_taxonomy.categories) do
+    check(menu_layout.TOOL_MENU:lower() > category.name:lower(), "tool menu sorts after " .. category.name)
+  end
+  check(menu_layout.TOOL_MENU:lower() > "by vendor", "tool menu sorts after By Vendor")
+  check(menu_layout.TOOL_MENU:lower() > shipped_taxonomy.uncategorized:lower(), "tool menu sorts after Uncategorized")
+  equal(entries[#entries].name, root .. ":VST SELECTOR:Insert at End of Chain", "last option")
   local deepest = 0
   for _, entry in ipairs(entries) do
     local _, colons = entry.name:gsub(":", "")
@@ -432,8 +440,8 @@ do
   end
   check(names_of[root .. ":Modulation:Chorus:Acme Audio - Wobbler"], "vendor shown before the plugin name")
   check(names_of[root .. ":By Vendor:Acme Audio:Wobbler"], "no vendor prefix inside By Vendor")
-  check(names_of[root .. ":Options:Show Vendor Names"], "toggle entry")
-  equal(names_of[root .. ":Options:Show Vendor Names"].setting, "show_vendor", "toggle setting")
+  check(names_of["--- " .. root .. ":VST SELECTOR:Show Vendor Names"], "toggle entry")
+  equal(names_of["--- " .. root .. ":VST SELECTOR:Show Vendor Names"].setting, "show_vendor", "toggle setting")
   equal(menu_layout.label({ name = "X", vendor = "Unknown", rating = 0 }, true), "X", "unknown vendor is not shown")
   check(merge.sanitize_user({ version = 1, settings = { show_vendor = true } }).settings.show_vendor,
     "show_vendor setting is kept")

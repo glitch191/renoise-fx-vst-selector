@@ -7,14 +7,14 @@ scripting terminal (start Renoise with the `--scripting-dev` argument, then
 
 1. Loading: no error appears when Renoise starts or when the tools are reloaded.
 2. Menu: right-click an empty area of a track's DSP chain. "Load VST..."
-   appears next to "Add Favorites", with categories, By Vendor,
-   Open Browser... and Rescan Plugins.
+   appears next to "Add Favorites", with the categories, By Vendor and, last,
+   VST SELECTOR (Open Browser..., Rescan Plugins and the options).
 3. Insert from each section: a category (for example Compressor)
    and By Vendor. The plugin lands after the selected device,
    or at the end of the chain when no device is selected, and is selected.
 4. Undo: Ctrl + Z removes the inserted device.
 5. In the browser, the detail panel shows how many times a plugin was used.
-6. Options submenu: each option shows a check mark when on and is kept after
+6. Options in VST SELECTOR: each option shows a check mark when on and is kept after
    a restart. Show Vendor Names gives "Vendor - Plugin"; Show Short
    Descriptions adds a hint in parentheses (check that long labels stay
    readable); Favorites Only lists only favorites; Hide Uncategorized removes

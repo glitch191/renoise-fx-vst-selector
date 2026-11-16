@@ -6,12 +6,17 @@
 
     <root>:<Category>[:<Sub-category>]:<Plugin>
     <root>:By Vendor:<Vendor>:<Plugin>
-    <root>:Open Browser...
-    <root>:Rescan Plugins
-    <root>:Options:<Option>          (check marks, see M.OPTIONS)
+    <root>:VST SELECTOR:Open Browser...
+    <root>:VST SELECTOR:Rescan Plugins
+    <root>:VST SELECTOR:<Option>     (check marks, see M.OPTIONS)
 
   Categories sit directly under the root so that a plugin is never more than
   three levels deep. Entry names are unique, ignoring letter case.
+
+  Renoise sorts submenus alphabetically and lists them before plain entries,
+  whatever the order they were added in. The tool's own submenu is named in
+  capitals starting with "V" so that it comes last, after "Utility", and
+  stands out from the categories.
 
   Needs, recent and most used plugins are only offered in the browser
   window, to keep the context menu short.
@@ -23,14 +28,14 @@ local M = {}
 
 M.OPEN_BROWSER = "Open Browser..."
 M.RESCAN = "Rescan Plugins"
-M.OPTIONS_MENU = "Options"
+M.TOOL_MENU = "VST SELECTOR"
 M.HINT_WIDTH = 32
 
 -- Options shown with a check mark in the Options submenu, in display
 -- order. setting is the key in the user data settings; all are off by
 -- default.
 M.OPTIONS = {
-  { setting = "show_vendor", label = "Show Vendor Names" },
+  { setting = "show_vendor", label = "Show Vendor Names", separator = true },
   { setting = "show_hints", label = "Show Short Descriptions" },
   { setting = "favorites_only", label = "Favorites Only" },
   { setting = "hide_uncategorized", label = "Hide Uncategorized" },
@@ -183,10 +188,11 @@ function M.build(records, taxonomy, root, options)
     add_plugins(root .. ":By Vendor:" .. names.sanitize_menu(vendor), by_vendor[vendor], false)
   end
 
-  add(root, M.OPEN_BROWSER, "browser", nil, true)
-  add(root, M.RESCAN, "rescan")
+  local tool_menu = root .. ":" .. M.TOOL_MENU
+  add(tool_menu, M.OPEN_BROWSER, "browser")
+  add(tool_menu, M.RESCAN, "rescan")
   for _, option in ipairs(M.OPTIONS) do
-    add(root .. ":" .. M.OPTIONS_MENU, option.label, "toggle", nil, option.separator, option.setting)
+    add(tool_menu, option.label, "toggle", nil, option.separator, option.setting)
   end
 
   return entries
