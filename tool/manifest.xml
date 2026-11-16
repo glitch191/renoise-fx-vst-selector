@@ -2,7 +2,7 @@
 <RenoiseScriptingTool doc_version="0">
   <ApiVersion>6.2</ApiVersion>
   <Id>com.glitch191.RenoiseFxVstSelecta</Id>
-  <Version>0.1.0</Version>
+  <Version>0.2.0</Version>
   <Author>glitch191</Author>
   <Name>FX VST Selector</Name>
   <Category>DSP</Category>
