@@ -36,8 +36,8 @@ each one does.
 - **Editor**: change the category, needs, vendor and description of any
   plugin, add your own note and a rating from 1 to 5 stars. Your edits always
   win over the catalog, and "Reset to catalog" brings the original back.
-- **Insertion** right after the selected device, or at the end of the chain,
-  on any track type. Ctrl + Z undoes it.
+- **Insertion** right after the selected device (or always at the end of the
+  chain, as an option), on any track type. Ctrl + Z undoes it.
 - **Usage counter** per plugin, shown in the browser.
 - **Export and import** of your data (edits, notes, ratings, counters).
 - VST and VST3 builds of the same plugin are merged into one entry. VST3 is
@@ -111,6 +111,9 @@ Browser...**, or with a key binding (see below).
 - The filters on the second line narrow the list by category, need, vendor,
   minimum rating, Renoise favorites, and entries marked "Needs review".
 - **Insert** on a row inserts that plugin; clicking its name selects it.
+- The bottom row rescans plugins, exports and imports your data, sets the
+  preferred format (VST3 or VST) and turns vendor names in the context menu
+  on or off.
 
 ### Editing a plugin
 
@@ -123,7 +126,9 @@ edits them:
 
 Changes are saved at once. **Reset to catalog** drops your edits of the
 catalog fields; your note and rating are kept. Entries marked "Needs review"
-are cautious guesses: correct them, and they stop being marked.
+are cautious guesses, either from the catalog or, when the panel says
+"Category guessed from name", from the keyword rules: correct them, and they
+stop being marked.
 
 ### Key binding
 
@@ -159,18 +164,19 @@ data, after a confirmation.
 - `tool/data/catalog.lua` and `tool/data/catalog_vendors.lua`: one entry per
   plugin, with its names, vendor, category, optional second category, needs
   and description.
-
 - `tool/data/keywords.lua`: the rules that guess a category from a plugin
   name when the plugin is not in the catalog. Rules are tried in order and
   the first match wins, so specific rules ("tape delay") come before general
   ones ("tape"). Each guessed plugin gets the default needs of its category.
 
 Catalog names are matched after normalization: letter case, channel layout
-("Stereo", "(Mono)"), format markers and a trailing version (one or two digits, "v2" or "2.5") are ignored, so
-"Blue Cat's Chorus 4 (Stereo)" matches the entry "Blue Cat's Chorus". Run the
+("Stereo", "(Mono)"), format markers and a trailing version (one or two
+digits, "v2" or "2.5") are ignored, so "Blue Cat's Chorus 4 (Stereo)" matches
+the entry "Blue Cat's Chorus". A number of three digits or more is a model
+number and is kept: "API 2500" and "API 560" stay distinct. Run the
 tests after any change: they check that every category and need used by the
 catalog exists, that no name is listed twice and that no description is longer
-than 120 characters.
+than 120 characters, and that every keyword rule is valid.
 
 ### Contributing descriptions
 
@@ -251,7 +257,9 @@ target a specific Renoise version folder.
 ./scripts/build-xrnx.ps1 -Tag v1.0.0
 ```
 
-This writes `dist/renoise-fx-vst-selector-v1.0.0.xrnx` and its `.sha256` file.
+This writes `dist/<folder>-v1.0.0.xrnx` and its `.sha256` file, where
+`<folder>` is the name of the repository folder (`renoise-fx-vst-selector`
+for a fresh clone).
 The version from the tag is written into the packaged `manifest.xml` only; the
 repository is not modified. Without `-Tag`, the file is named `...-dev.xrnx`.
 
