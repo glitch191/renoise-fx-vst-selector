@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RenoiseScriptingTool doc_version="0">
+  <ApiVersion>6.2</ApiVersion>
+  <Id>com.glitch191.RenoiseFxVstSelecta</Id>
+  <Version>0.1.0</Version>
+  <Author>glitch191</Author>
+  <Name>FX VST Selector</Name>
+  <Category>DSP</Category>
+  <Description>Find and insert the right effect plugin by category, need, vendor or search, with a short description of what each plugin does. Adds a submenu to the DSP chain context menu and a searchable browser window.</Description>
+  <Platform>Windows, Mac, Linux</Platform>
+</RenoiseScriptingTool>

@@ -1,0 +1,21 @@
+# Build output
+dist/
+*.xrnx
+*.sha256
+
+# User data and exports (never versioned)
+userdata*.json
+*-export.json
+preferences.xml
+plugin-info-dump.txt
+
+# Verification screenshots (only docs/screenshots is versioned)
+tmp/
+
+# Logs and editor files
+*.log
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
