@@ -11,7 +11,7 @@ each one does.
 
 *The browser window: search, filters, result list, and the detail panel used to edit a plugin.*
 
-![The Load VST... submenu in the DSP chain context menu, listing the categories and the VST SELECTOR submenu, with Saturation and Distortion open](docs/screenshots/context-menu.png)
+![The Load VST... submenu in the DSP chain context menu, listing the categories and the VST SELECTOR submenu, with Mastering open](docs/screenshots/context-menu.png)
 
 *The Load VST... submenu, next to Renoise's own DSP chain menu entries.*
 
