@@ -90,7 +90,7 @@ Right-click an empty area of a track's DSP chain (or a device in it) and open
 | Option | Effect |
 | ------ | ------ |
 | Show Vendor Names | Labels read "Vendor - Plugin" (not inside By Vendor). |
-| Show Short Descriptions | Adds the start of the description, for example `Blackhole  (Huge, otherworldly reverb)`. |
+| Show Short Descriptions | Adds the first sentence of the description (up to 70 characters), for example `Blackhole  (Huge, otherworldly reverb)`. |
 | Favorites Only | The menu lists only your Renoise favorites. The browser still shows everything. |
 | Hide Uncategorized | Removes the Uncategorized submenu. Those plugins stay in By Vendor. |
 | Open Editor After Insert | Opens the plugin's window right after inserting it. |

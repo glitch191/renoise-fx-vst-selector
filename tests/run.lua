@@ -464,7 +464,7 @@ do
   equal(menu_layout.hint("Huge, otherworldly reverb. Endless ambient tails."), "Huge, otherworldly reverb",
     "hint keeps the first sentence")
   equal(menu_layout.hint("Simple gain control."), "Simple gain control", "hint drops the final period")
-  local long = menu_layout.hint("Transparent wideband compressor for buses and mastering work.")
+  local long = menu_layout.hint("Transparent wideband compressor for buses, stems and mastering work, with a sidechain filter and detailed metering.")
   check(#long <= menu_layout.HINT_WIDTH, "hint is short")
   equal(long:sub(-3), "...", "a cut hint ends with three dots")
   check(not long:find(" %.%.%.$"), "a cut hint ends on a word")

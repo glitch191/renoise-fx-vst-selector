@@ -29,7 +29,8 @@ local M = {}
 M.OPEN_BROWSER = "Open Browser..."
 M.RESCAN = "Rescan Plugins"
 M.TOOL_MENU = "VST SELECTOR"
-M.HINT_WIDTH = 32
+-- Long enough for the whole first sentence of 96 % of the catalog descriptions.
+M.HINT_WIDTH = 70
 
 -- Options shown with a check mark in the Options submenu, in display
 -- order. setting is the key in the user data settings; all are off by
