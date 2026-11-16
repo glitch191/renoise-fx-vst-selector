@@ -88,6 +88,7 @@ end
     "Blue Cat's Chorus 4 (Stereo)"   -> "blue cat's chorus"
     "RC-20 Retro Color v2"           -> "rc-20 retro color"
     "Aphex Vintage Exciter Stereo"   -> "aphex vintage exciter"
+    "API 2500 Stereo"                -> "api 2500"
 ]]
 function M.normalize(name)
   local s = M.fold(name)
@@ -108,8 +109,12 @@ function M.normalize(name)
       s, stripped = strip_trailing_word(s, word)
       changed = changed or stripped
     end
-    -- Trailing version: " 2", " v2", " v2.1". Kept when nothing else remains.
-    local base = s:match("^(.-)%s+v?%d+[%d%.]*$")
+    -- Trailing version: " 2", " 11", " v2", " v2.1", " 2.5". Kept when nothing
+    -- else remains. A plain number of three digits or more is a model number
+    -- ("API 2500", "dbx 160"), not a version, and is kept.
+    local base = s:match("^(.-)%s+v%d+[%d%.]*$")
+      or s:match("^(.-)%s+%d%d?$")
+      or s:match("^(.-)%s+%d+%.[%d%.]+$")
     if base and base ~= "" then
       s = M.trim(base)
       changed = true

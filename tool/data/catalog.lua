@@ -34,7 +34,7 @@ end
 
 local REVIEW = { needs_review = true }
 
-return {
+local entries = {
   -- EQ
   e("Blue Cat's Triple EQ", "Blue Cat Audio", "EQ", nil, { "clean up", "color" },
     "Simple 3-band semi-parametric EQ (low shelf, peak, high shelf) for quick tone shaping."),
@@ -365,3 +365,13 @@ return {
     "Parallel compression and saturation in one plugin. More punch without losing dynamics.",
     { secondary = "Saturation and Distortion" }),
 }
+
+-- More entries, one file per group of vendors. Every name must be unique
+-- across all files (tests/run.lua checks it).
+for _, module in ipairs({ "data.catalog_vendors" }) do
+  for _, entry in ipairs(require(module)) do
+    entries[#entries + 1] = entry
+  end
+end
+
+return entries

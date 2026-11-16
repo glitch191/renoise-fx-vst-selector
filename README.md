@@ -26,7 +26,7 @@ each one does.
 - **Browser window** with a search that filters while you type (names,
   vendors, descriptions, notes and tags), and filters by category, need,
   vendor, rating, Renoise favorites and "Needs review".
-- **Catalog** of short, factual descriptions for about 130 common effect
+- **Catalog** of short, factual descriptions for about 580 common effect
   plugins. Plugins it does not know land in "Uncategorized".
 - **Editor**: change the category, needs, vendor and description of any
   plugin, add your own note and a rating from 1 to 5 stars. Your edits always
@@ -140,11 +140,12 @@ data, after a confirmation.
 - `tool/data/taxonomy.lua`: the list of categories and needs. Names must not
   contain ":". The list is flat on purpose; sub-categories are supported but
   not used.
-- `tool/data/catalog.lua`: one entry per plugin, with its names, vendor,
-  category, optional second category, needs and description.
+- `tool/data/catalog.lua` and `tool/data/catalog_vendors.lua`: one entry per
+  plugin, with its names, vendor, category, optional second category, needs
+  and description.
 
 Catalog names are matched after normalization: letter case, channel layout
-("Stereo", "(Mono)"), format markers and a trailing version are ignored, so
+("Stereo", "(Mono)"), format markers and a trailing version (one or two digits, "v2" or "2.5") are ignored, so
 "Blue Cat's Chorus 4 (Stereo)" matches the entry "Blue Cat's Chorus". Run the
 tests after any change: they check that every category and need used by the
 catalog exists, that no name is listed twice and that no description is longer
@@ -177,7 +178,8 @@ tool/                    The tool itself; its content is the .xrnx file
     json.lua             JSON encoder and decoder
   data/
     taxonomy.lua         Categories and needs
-    catalog.lua          Plugin descriptions
+    catalog.lua          Plugin descriptions (first entries)
+    catalog_vendors.lua  More plugin descriptions, grouped by vendor
 tests/
   run.lua                Unit tests of the pure logic and of the catalog
   smoke.lua              Runs main.lua and browser.lua against a fake Renoise API
